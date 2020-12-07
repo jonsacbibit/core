@@ -130,7 +130,7 @@ class TUSContext implements Context {
 	 *                               see https://tus.io/protocols/resumable-upload.html#upload-metadata
 	 *                               Don't Base64 encode the value.
 	 * @param int    $noOfChunks
-     * @param array  $creationUploadHeaders
+	 * @param array  $creationUploadHeaders
 	 *
 	 * @return void
 	 * @throws ConnectionException
@@ -143,25 +143,16 @@ class TUSContext implements Context {
 		string $destination,
 		array $uploadMetadata = [],
 		int $noOfChunks = 1,
-        array $creationUploadHeaders = []
+		array $creationUploadHeaders = []
 	) {
-        $TusHeader = '';
-        foreach ($creationUploadHeaders as $key => $value) {
-            if ($TusHeader != '') {
-                $TusHeader = $TusHeader . ',' ;
-            }
-            $TusHeader = $TusHeader . $key . '=>' . $value;
-        }
 		$user = $this->featureContext->getActualUsername($user);
 		$password = $this->featureContext->getUserPassword($user);
+		$header = \array_merge(['Authorization' => 'Basic ' . \base64_encode($user . ':' . $password)], $creationUploadHeaders);
 		$client = new Client(
-            $this->featureContext->getBaseUrl(),
-            ['verify' => false,
-                'headers' => [
-                    'Authorization' => 'Basic ' . \base64_encode($user . ':' . $password),
-                    $TusHeader
-                ]
-            ]
+			$this->featureContext->getBaseUrl(),
+			['verify' => false,
+			  'headers' => $header
+			]
 		);
 		$client->setApiPath(
 			WebDavHelper::getDavPath($user, $this->featureContext->getDavPathVersion())
@@ -284,26 +275,25 @@ class TUSContext implements Context {
 		$this->featureContext = $environment->getContext('FeatureContext');
 	}
 
-    /**
-     * @When user :user creates a new TUS resource with content :content to :destination on the WebDAV API with these headers:
-     *
-     * @param string $user
-     * @param string $content
-     * @param string $destination
-     * @param TableNode $headers
-     *
-     * @return void
-     *
-     * @throws Exception
-     */
-    public function userCreatesWithUpload(
-        string $user, string $content, string $destination, TableNode $headers
-    )
-    {
-        $tmpfname = $this->writeDataToTempFile($content);
-        $this->userUploadsUsingTusAFileTo(
-            $user, \basename($tmpfname), $destination, [], 1, $headers->getRowsHash()
-        );
-        \unlink($tmpfname);
-    }
+	/**
+	 * @When user :user creates a new TUS resource with content :content to :destination on the WebDAV API with these headers:
+	 *
+	 * @param string $user
+	 * @param string $content
+	 * @param string $destination
+	 * @param TableNode $headers
+	 *
+	 * @return void
+	 *
+	 * @throws Exception
+	 */
+	public function userCreatesWithUpload(
+		string $user, string $content, string $destination, TableNode $headers
+	) {
+		$tmpfname = $this->writeDataToTempFile($content);
+		$this->userUploadsUsingTusAFileTo(
+			$user, \basename($tmpfname), $destination, [], 1, $headers->getRowsHash()
+		);
+		\unlink($tmpfname);
+	}
 }

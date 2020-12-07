@@ -10,11 +10,11 @@ Feature: tests of the creation extension see https://tus.io/protocols/resumable-
       | Upload-Length | 100                             |
       | Tus-Resumable | 1.0.0                           |
       | Content-Type  | application/offset+octet-stream |
-    Then as "Alice" file "/textfile.txt" should exist
-    And the content of file "/textfile.txt" for user "Alice" should be "uploaded content"
-    And the following headers should be set
+    Then the following headers should be set
       | header        | value |
       | Tus-Resumable | 1.0.0 |
+    And as "Alice" file "/textfile.txt" should exist
+    And the content of file "/textfile.txt" for user "Alice" should be "uploaded content"
     Examples:
       | dav_version |
       | old         |
