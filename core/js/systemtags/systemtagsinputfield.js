@@ -12,6 +12,7 @@
 
 (function(OC) {
 	var TEMPLATE =
+		'<span class="hidden systemTagsInputFieldError"></span>' +
 		'<input class="systemTagsInputField" type="hidden" name="tags" value=""/>';
 
 	var RESULT_TEMPLATE =
@@ -144,6 +145,7 @@
 				container: 'body'
 			});
 			$renameForm.find('input').focus().selectRange(0, oldName.length);
+
 			return false;
 		},
 
@@ -259,6 +261,17 @@
 		 * @param {Object} query select2 query object
 		 */
 		_queryTagsAutocomplete: function(query) {
+			var termErrors = false;
+
+			if(query.term.indexOf('@') !== -1) {
+				termErrors = true;
+				this.$errorField.text(t('systemtags', 'This looks like an email address or federated cloud ID. Are you sure you want to use this tag name?')).removeClass('hidden');
+			}
+
+			if(!termErrors){
+				this._clearError();
+			}
+
 			var self = this;
 			this.collection.fetch({
 				success: function(collection) {
@@ -408,11 +421,12 @@
 
 			this.$el.find('[title]').tooltip({placement: 'bottom'});
 			this.$tagsField = this.$el.find('[name=tags]');
-			this.$tagsField.select2({
+			this.$errorField = this.$el.find('.systemTagsInputFieldError');
+			var select = this.$tagsField.select2({
 				placeholder: t('core', 'Collaborative tags'),
 				containerCssClass: 'systemtags-select2-container',
 				dropdownCssClass: 'systemtags-select2-dropdown',
-				closeOnSelect: false,
+				closeOnSelect: true,
 				allowClear: false,
 				multiple: this._multiple,
 				toggleSelect: this._multiple,
@@ -441,7 +455,15 @@
 				}
 			})
 				.on('select2-selecting', this._onSelectTag)
-				.on('select2-removing', this._onDeselectTag);
+				.on('select2-selecting', this._clearError.bind(this))
+				.on('select2-removing', this._onDeselectTag)
+				.on('select2-close', this._clearError.bind(this))
+				// this is basically a "hack" to enable option select via arrow keys.
+				// it seems to be a known problem in Select2 < v4 when closeOnSelect is false
+				.on("change", function(){
+					select.select2('close');
+					select.select2('open');
+				});
 
 			var $dropDown = this.$tagsField.select2('dropdown');
 			// register events for inside the dropdown
@@ -469,6 +491,10 @@
 
 		setData: function(data) {
 			this.$tagsField.select2('data', data);
+		},
+
+		_clearError: function (){
+			this.$errorField.text('').addClass('hidden');
 		}
 	});
 
@@ -476,4 +502,3 @@
 	OC.SystemTags.SystemTagsInputField = SystemTagsInputField;
 
 })(OC);
-
