@@ -1,6 +1,6 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Bug report - .M4A Files not playing in NEXTCLOUD
+about: Music app cannot play m4a
 title: ''
 labels: bug
 assignees: ''
@@ -18,31 +18,33 @@ To make it possible for us to help you please fill out below information careful
 Before reporting any issues please make sure that you're using the latest available version of ownCloud, see https://owncloud.org/changelog/
 --> 
 ### Steps to reproduce
-1.
-2.
-3.
+1. Download and Enable App  
+2. Scan Music (m4a files)
+3. Play music
 
 ### Expected behaviour
 Tell us what should happen
-
+Music should play like the other file types (mp3)
+Tested and should play in Chrome, Firefox, etc. Tested on IOS and Android nextcloud apps. 
 ### Actual behaviour
 Tell us what happens instead
-
+Error shows in right top corner (ex): "Error playing file: 01%20-%20Anthem%20For%20The%20Underdog.m4a"
+Shows error and the file name. 
 ### Server configuration
 **Operating system**:
-
+Ubuntu 20 LTS
 **Web server:**
-
+Apache 2
 **Database:**
-
+Maria DB
 **PHP version:**
-
+Newest 
 **ownCloud version:** (see ownCloud admin page)
-
+Nextcloud 20
 **Updated from an older ownCloud or fresh install:**
-
+Fresh Install
 **Where did you install ownCloud from:**
-
+Nextcloud.com 
 **Signing status (ownCloud 9.0 and above):**
 
 ```
@@ -50,7 +52,7 @@ Login as admin user into your ownCloud and access
 http://example.com/index.php/settings/integrity/failed 
 paste the results into https://gist.github.com/ and puth the link here.
 ```
-
+No errors have been found. 
 
 **The content of config/config.php:**
 
